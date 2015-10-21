@@ -333,11 +333,11 @@ function cubesviewerViewCubeExplore() {
 				});
 
 				nid.push(drilldown_level_values.join("-"));
-
-				var cutDimension = parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" );
+				var cutDimension = (parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" )).replace(/&/g,'&amp;').replace(/"/, '&quot;');
+				var data_value = drilldown_level_values.join(",").replace(/&/g,'&amp;').replace(/"/, '&quot;');
 				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;" +
 						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
-						 'data-value="' + drilldown_level_values.join(",") + '">' +
+						 'data-value="' + data_value + '">' +
 						 drilldown_level_labels.join(" / ") + '</a>');
 			}
 
