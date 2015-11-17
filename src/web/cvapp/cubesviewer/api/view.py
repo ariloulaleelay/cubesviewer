@@ -59,7 +59,7 @@ class ViewSaveView(APIView):
             tview = CubesView()
 
         # Update or delete as necessary
-        if (str(request.POST["data"]) == ""):
+        if (unicode(request.POST["data"]) == u''):
             tview.delete()
         else:
             tview.name = request.POST["name"]
