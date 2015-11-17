@@ -39,10 +39,10 @@ function cubesviewer () {
 	this.options = {
 		cubesUrl : null,
 		cubesLang : null,
-		pagingOptions: [15, 30, 100, 250],
+		pagingOptions: [50, 100, 250, 1000, 10000],
 		datepickerShowWeek: true,
 		datepickerFirstDay: 1,
-		tableResizeHackMinWidth: 350 ,
+		tableResizeHackMinWidth: 350,
 		jsonRequestType: "json" // "json | jsonp"
 	};
 

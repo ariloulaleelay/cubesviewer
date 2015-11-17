@@ -160,6 +160,7 @@ function cubesviewerViewCubeDateFilter () {
 								+ '<option value="auto-last12m">Last year</option>'
 								+ '<option value="auto-last24m">Last 2 years</option>'
 								+ '<option value="auto-january1st">From January 1st</option>'
+								+ '<option value="auto-beforeyesterday">Before yesterday</option>'
 								+ '<option value="auto-yesterday">Yesterday</option>'
 								+ '</optgroup>' + '</select> ' + 'Range: '
 								+ '<input name="date_start" /> - '
@@ -266,9 +267,13 @@ function cubesviewerViewCubeDateFilter () {
 				date_from = new Date();
 				date_from.setDate(date_from.getDate() - 1);
 				date_to = new Date();
-                date_to.setDate(date_from.getDate() - 1);
+        date_to.setDate(date_from.getDate());
+			} else if (datefilter.mode == "auto-beforeyesterday") {
+				date_from = new Date();
+				date_from.setDate(date_from.getDate() - 2);
+				date_to = new Date();
+        date_to.setDate(date_from.getDate());
 			}
-
 		} else if (datefilter.mode == "custom") {
 			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
 				date_from = new Date(datefilter.date_from);

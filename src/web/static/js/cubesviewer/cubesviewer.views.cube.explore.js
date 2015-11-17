@@ -403,7 +403,7 @@ function cubesviewerViewCubeExplore() {
 				index : ag.ref,
 				align : "right",
 				sorttype : "number",
-				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 95),
+				width : cubesviewer.views.cube.explore.defineColumnWidth(view, ag.ref, 120),
 				formatter: 'number',
 				cellattr: cubesviewer.views.cube.explore.columnTooltipAttr(ag.ref),
 				formatoptions: { decimalSeparator:".", thousandsSeparator: " ", decimalPlaces: (ag.ref=="record_count" ? 0 : 2)  }
@@ -463,8 +463,7 @@ function cubesviewerViewCubeExplore() {
 		};
 
 		$('#summaryTable-' + view.id).get(0).idsOfSelectedRows = [];
-		$('#summaryTable-' + view.id)
-				.jqGrid(
+		$('#summaryTable-' + view.id).jqGrid("autoWidthColumns").jqGrid(
 						{
 							data : dataRows,
 							userData : (data.summary ? dataTotals : null),
@@ -480,10 +479,10 @@ function cubesviewerViewCubeExplore() {
 							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
 							footerrow : true,
 							userDataOnFooter : true,
-							forceFit : false,
+							forceFit : true,
 							shrinkToFit : false,
 							width: cubesviewer.options.tableResizeHackMinWidth,
-							// autowidth: true,
+							//autowidth: true,
 							multiselect : true,
 							multiboxonly : true,
 

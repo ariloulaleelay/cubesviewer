@@ -207,7 +207,7 @@ cubesviewer.views.cube.explore.onTableSort = function (view, index, iCol, sortor
 };
 
 cubesviewer.views.cube.explore.defineColumnWidth = function(view, column, vdefault) {
-	if (column in  view.params.columnWidths) {
+	if (column in view.params.columnWidths) {
 		return view.params.columnWidths[column];
 	} else {
 		return vdefault;
