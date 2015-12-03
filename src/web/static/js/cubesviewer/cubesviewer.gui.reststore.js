@@ -103,6 +103,7 @@ function cubesviewerGuiRestStore() {
         // Draw menu options (depending on mode)
         menu.find (".cv-gui-renameview").parent().after(
             '<div></div>' +
+            '<li><a class="cv-gui-linkview" href="#"><span class="ui-icon ui-icon-link"></span>Link</a></li>' +
             '<li><a class="cv-gui-shareview" data-sharedstate="' + (view.shared ? "0" : "1") + '" href="#"><span class="ui-icon ui-icon-rss"></span>' + (view.params.shared ? "Unshare" : "Share") + '</a></li>' +
             '<div></div>' +
             '<li><a class="cv-gui-saveview" href="#"><span class="ui-icon ui-icon-disk"></span>Save</a></li>' +
@@ -123,6 +124,16 @@ function cubesviewerGuiRestStore() {
         });
         $(view.container).find('.cv-gui-shareview').click(function() {
             view.cubesviewer.gui.reststore.shareView(view, $(this).attr('data-sharedstate'));
+            return false;
+        });
+        $(view.container).find('.cv-gui-linkview').click(function() {
+            var url = view.cubesviewer.views.getStaticLink(view);
+            var aLink = document.createElement('a');
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("click");
+            aLink.href = url;
+            aLink.target = '_blank';
+            aLink.dispatchEvent(evt);
             return false;
         });
 

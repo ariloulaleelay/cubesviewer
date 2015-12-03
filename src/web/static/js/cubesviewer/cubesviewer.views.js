@@ -132,10 +132,10 @@ function cubesviewerViews () {
 	 */
 	this.blockView = function (view, message) {
 		if (message == "undef") message = null;
-		$(view.container).block({ 
-			"message": message, 
+		$(view.container).block({
+			"message": message,
 			"fadeOut": 200,
-			"onUnblock": function() { 
+			"onUnblock": function() {
 				// Fix conflict with jqBlock which makes menus to not overflow off the view (makes menus innacessible)
 				$(view.container).css("position", "inherit");
 			}
@@ -188,6 +188,13 @@ function cubesviewerViews () {
 		return JSON.stringify (view.params);
 	};
 	
+	this.getStaticLink = function(view) {
+		var result = jQuery.extend(true, {}, view);
+		result.params.hidetoolbar = true;
+		console.log(cubesviewer);
+		console.log(cubesviewer.gui);
+		return cubesviewer.gui.options.backendUrl + '/show_single?' + JSON.stringify(result.params);
+	}
 };
 
 /*

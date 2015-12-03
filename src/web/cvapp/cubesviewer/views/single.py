@@ -24,27 +24,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
 
+from django.views.generic.base import TemplateView
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from cubesviewer.views.cubesviewer import CubesViewerView
-from cubesviewer.views.single import ShowSingleView
-from cubesviewer.api import proxy
-from cubesviewer.api.view import ViewSaveView, ViewListView
-from django.views.decorators.csrf import csrf_exempt
+from urllib import unquote
+from json import loads as json_loads
+from json import dumps as json_dumps
 
-# Enable admin
-admin.autodiscover()
+class ShowSingleView(TemplateView):
 
-urlpatterns = patterns('',
+    template_name = "cubesviewer/show.html"
+    exclude = ()
 
-    url(r'^$', login_required( CubesViewerView.as_view() ) ),
+    def get_context_data(self, **kwargs):
+        context = TemplateView.get_context_data(self, **kwargs)
+        context["cubesviewer_cubes_url"] = settings.CUBESVIEWER_CUBES_URL
+        context["cubesviewer_backend_url"] = settings.CUBESVIEWER_BACKEND_URL
+        context["view_config"] = ''
+        try:
+            query = unquote(self.request.META['QUERY_STRING'])
+            context["view_config"] = json_dumps(json_loads(query))
+        except ValueError, e:
+            pass
+        return context
 
-    url(r'^view/list/$', ViewListView.as_view() ),
-    url(r'^view/save/$', csrf_exempt(ViewSaveView.as_view()) ),
-
-    url(r'^cubes/', login_required(proxy.connection)),
-    url(r'^show_single$', ShowSingleView.as_view())
-)
