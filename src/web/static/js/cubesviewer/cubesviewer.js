@@ -25,7 +25,6 @@
  * SOFTWARE.
  */
 
-
 /*
  * Main cubesviewer object. It is created by the library and made
  * available as the global "cubesviewer" variable.
@@ -128,6 +127,14 @@ function cubesviewer () {
 		this.refresh();
 
 	};
+
+	// common functions
+	this.common = {};
+
+	this.common.escapeHtml = function(str) {
+			var result = str;
+			return result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		}
 
 	/*
 	 * Initialize CubesViewer library.

@@ -171,7 +171,7 @@ function cubesviewerViewCubeExplore() {
 		// Filter selected option (to filter in the values of the selected rows in the Explore table)
 		if (view.params.mode == "explore") {
 			menu.append('<li><a href="#" class="explore-filterselected" ><span class="ui-icon ui-icon-zoomin"></span>Filter selected</a></li>' +
-					    '<div></div>');
+						'<div></div>');
 		}
 
 		// Separator and "clear filters". The datefilter uses this class to place itself in the menu.
@@ -308,6 +308,8 @@ function cubesviewerViewCubeExplore() {
 
 	this._addRows = function(view, rows, data) {
 
+		var common = cubesviewer.common;
+
 		$(data.cells).each( function(idx, e) {
 
 			var nid = [];
@@ -333,12 +335,13 @@ function cubesviewerViewCubeExplore() {
 				});
 
 				nid.push(drilldown_level_values.join("-"));
-				var cutDimension = (parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" )).replace(/&/g,'&amp;').replace(/"/g, '&quot;');
-				var data_value = drilldown_level_values.join(",").replace(/&/g,'&amp;').replace(/"/g, '&quot;');
+				var cutDimension = common.escapeHtml(parts.dimension.name + ( parts.hierarchy.name != "default" ? "@" + parts.hierarchy.name : "" ));
+				var data_value = common.escapeHtml(drilldown_level_values.join(","));
 				key.push('<a href="#" class="cv-grid-link" onclick="' + "cubesviewer.views.cube.explore.selectCut(cubesviewer.views.getParentView(this), $(this).attr('data-dimension'), $(this).attr('data-value')); return false;" +
-						 '" class="selectCut" data-dimension="' + cutDimension + '" ' +
-						 'data-value="' + data_value + '">' +
-						 drilldown_level_labels.join(" / ") + '</a>');
+						'" class="selectCut" data-dimension="' + cutDimension + '" ' +
+						'data-value="' + data_value + '">' +
+						common.escapeHtml(drilldown_level_labels.join(" / ")) + '</a>'
+				);
 			}
 
 			// Set key
@@ -346,7 +349,6 @@ function cubesviewerViewCubeExplore() {
 			for (var i = 0; i < key.length; i++) {
 				row["key" + i] = key[i];
 			}
-			//row["key"] = key.join(' / ');
 
 			// Add columns
 			$(view.cube.aggregates).each(function(idx, ag) {
@@ -384,10 +386,14 @@ function cubesviewerViewCubeExplore() {
 	this.drawSummary = function(view, data) {
 
 		var cubesviewer = view.cubesviewer;
+		var title = 'Aggregated Data';
+		if (view.params.name) {
+			title = cubesviewer.common.escapeHtml(view.params.name);
+		}
 
 		$(view.container).find('.cv-view-viewdata').empty();
 		$(view.container).find('.cv-view-viewdata').append(
-				'<h3>Aggregated Data</h3>' + '<table id="summaryTable-'
+				'<h3>' + title + '</h3>' + '<table id="summaryTable-'
 						+ view.id + '"></table>' + '<div id="summaryPager-'
 						+ view.id + '"></div>');
 
