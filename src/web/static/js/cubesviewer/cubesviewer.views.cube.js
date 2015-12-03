@@ -96,18 +96,16 @@ function cubesviewerViewCube () {
 			return;
 		}
 
-		
 		if ($(".cv-view-viewdata", view.container).size() == 0) {
-
+			var structureHtml = '<div class="cv-view-panel">';
+			if (!view.params.hidetoolbar) {
+				structureHtml += '<div class="cv-view-viewmenu"></div><div class="cv-view-viewinfo"></div>';
+			}
+			structureHtml += '<div class="cv-view-viewdata" style="clear: both;"></div>' +
+											 '<div class="cv-view-viewfooter" style="clear: both;"></div>' +
+											 '</div>'
 			$(view.container).empty();
-			$(view.container).append(
-					'<div class="cv-view-panel">' + 
-					'<div class="cv-view-viewmenu"></div>' +
-					'<div class="cv-view-viewinfo"></div>' +
-					'<div class="cv-view-viewdata" style="clear: both;"></div>' +
-					'<div class="cv-view-viewfooter" style="clear: both;"></div>' +
-					'</div>'
-			);
+			$(view.container).append(structureHtml);
 			
 		}
 		
