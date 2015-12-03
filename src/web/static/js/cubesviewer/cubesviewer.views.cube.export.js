@@ -32,124 +32,124 @@
  */
 function cubesviewerViewCubeExporter() {
 
-    this.cubesviewer = cubesviewer;
+	this.cubesviewer = cubesviewer;
 
-    /*
-     * Draw export options.
-     */
-    this.onViewDraw = function(event, view) {
+	/*
+	 * Draw export options.
+	 */
+	this.onViewDraw = function(event, view) {
 
-        //if (view.params.mode != "explore") return;
+		//if (view.params.mode != "explore") return;
 
-        view.cubesviewer.views.cube.exporter.drawMenu(view);
+		view.cubesviewer.views.cube.exporter.drawMenu(view);
 
-    };
+	};
 
-    /*
-     * Draw export menu options.
-     */
-    this.drawMenu = function(view) {
+	/*
+	 * Draw export menu options.
+	 */
+	this.drawMenu = function(view) {
 
-        if (view.cube == null) return;
+		if (view.cube == null) return;
 
-        var menu = $(".cv-view-menu-view", $(view.container));
-        var cube = view.cube;
+		var menu = $(".cv-view-menu-view", $(view.container));
+		var cube = view.cube;
 
-        // Draw menu options (depending on mode)
+		// Draw menu options (depending on mode)
 
-        menu.append('<div></div>');
-        if ((view.params.mode == "explore") || (view.params.mode == "series")) {
-            menu.append('<li><a href="#" class="cv-view-export-table"><span class="ui-icon ui-icon-script"></span>Export table</a></li>');
-        }
-        menu.append('<li><a href="#" class="cv-view-export-facts"><span class="ui-icon ui-icon-script"></span>Export facts</a></li>');
+		menu.append('<div></div>');
+		if ((view.params.mode == "explore") || (view.params.mode == "series")) {
+			menu.append('<li><a href="#" class="cv-view-export-table"><span class="ui-icon ui-icon-script"></span>Export table</a></li>');
+		}
+		menu.append('<li><a href="#" class="cv-view-export-facts"><span class="ui-icon ui-icon-script"></span>Export facts</a></li>');
 
-        $(menu).menu( "refresh" );
-        $(menu).addClass("ui-menu-icons");
+		$(menu).menu( "refresh" );
+		$(menu).addClass("ui-menu-icons");
 
-        // Events
-        $(view.container).find('.cv-view-export-table').click(function() {
-            view.cubesviewer.views.cube.exporter.exportCsv(view);
-            return false;
-        });
-        $(view.container).find('.cv-view-export-facts').click(function() {
-            view.cubesviewer.views.cube.exporter.exportFacts(view);
-            return false;
-        });
-    };
+		// Events
+		$(view.container).find('.cv-view-export-table').click(function() {
+			view.cubesviewer.views.cube.exporter.exportCsv(view);
+			return false;
+		});
+		$(view.container).find('.cv-view-export-facts').click(function() {
+			view.cubesviewer.views.cube.exporter.exportFacts(view);
+			return false;
+		});
+	};
 
-    /*
-     * Download facts in CSV format from Cubes Server
-     */
-    this.exportFacts = function(view) {
+	/*
+	 * Download facts in CSV format from Cubes Server
+	 */
+	this.exportFacts = function(view) {
 
-        var params = {}
-        var args = view.cubesviewer.views.cube.buildBrowserArgs(view, false, true);
+		var params = {}
+		var args = view.cubesviewer.views.cube.buildBrowserArgs(view, false, true);
 
-        params = args;
-        if(args && args.cut)
-            params.data.cut = params.data.cut.toString();
+		params = args;
+		if(args && args.cut)
+			params.data.cut = params.data.cut.toString();
 
-        params["format"] = "csv";
+		params["format"] = "csv";
 
-        var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(params);
-        window.open(url, '_blank');
-        window.focus();
-    };
+		var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(params);
+		window.open(url, '_blank');
+		window.focus();
+	};
 
-    /*
-     * Export a view (either in "explore" or "series" mode) in CSV format.
-     */
-    this.exportCsv = function (view) {
+	/*
+	 * Export a view (either in "explore" or "series" mode) in CSV format.
+	 */
+	this.exportCsv = function (view) {
 
-        var content = "";
+		var content = "";
 
-        var firstIndex = 0;
-        if (view.params.mode == "explore") {
-            var grid = $('#summaryTable-' + view.id);
-            firstIndex = 1;
-        } else {
-            var grid = $('#seriesTable-' + view.id);
-        }
+		var firstIndex = 0;
+		if (view.params.mode == "explore") {
+			var grid = $('#summaryTable-' + view.id);
+			firstIndex = 1;
+		} else {
+			var grid = $('#seriesTable-' + view.id);
+		}
 
-        var values = [];
-        var labels = grid.jqGrid('getGridParam','colNames');
-        var model = grid.jqGrid('getGridParam','colModel');
-        var data = grid.jqGrid('getGridParam', 'data');
+		var values = [];
+		var labels = grid.jqGrid('getGridParam','colNames');
+		var model = grid.jqGrid('getGridParam','colModel');
+		var data = grid.jqGrid('getGridParam', 'data');
 
-        for (var i = firstIndex; i < model.length; i++) {
-            if (view.params.columnHide[model[i].name])
-                continue;
-            var label = labels[i];
-            label = label.replace(/"/g, '\\"');
-            values.push('"' + label + '"');
-        }
+		for (var i = firstIndex; i < model.length; i++) {
+			if (view.params.columnHide[model[i].name])
+				continue;
+			var label = labels[i];
+			label = label.replace(/"/g, '\\"');
+			values.push('"' + label + '"');
+		}
 
-        content = content + (values.join(",")) + "\n";
+		content = content + (values.join(",")) + "\n";
 
-        for (var i = 0; i < data.length; i++) {
-            values = [];
-            for (var j = firstIndex; j < model.length; j++) {
-                var name = model[j].name;
-                if (view.params.columnHide[name])
-                    continue;
-                var colval = data[i][name];
-                colval = $('<div>' + colval + '</div>').text(); // TODO ???
-                if (colval == undefined) colval = 0;
-                colval = colval.replace(/"/g, '\\"');
-                values.push ('"' + colval + '"');
-            }
-            content = content + (values.join(",")) + "\n";
-        }
+		for (var i = 0; i < data.length; i++) {
+			values = [];
+			for (var j = firstIndex; j < model.length; j++) {
+				var name = model[j].name;
+				if (view.params.columnHide[name])
+					continue;
+				var colval = data[i][name];
+				colval = $('<div>' + colval + '</div>').text(); // TODO ???
+				if (colval == undefined) colval = 0;
+				colval = colval.replace(/"/g, '\\"');
+				values.push ('"' + colval + '"');
+			}
+			content = content + (values.join(",")) + "\n";
+		}
 
-        var url = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
-        var aLink = document.createElement('a');
-        var evt = document.createEvent("HTMLEvents");
-        var filename = view.params.name.replace(/\//g, '').replace(/\s+/g, '_');
-        evt.initEvent("click");
-        aLink.download = filename + '.csv';
-        aLink.href = url;
-        aLink.target = '_blank';
-        aLink.dispatchEvent(evt);
+		var url = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
+		var aLink = document.createElement('a');
+		var evt = document.createEvent("HTMLEvents");
+		var filename = view.params.name.replace(/\//g, '').replace(/\s+/g, '_');
+		evt.initEvent("click");
+		aLink.download = filename + '.csv';
+		aLink.href = url;
+		aLink.target = '_blank';
+		aLink.dispatchEvent(evt);
   };
 };
 
