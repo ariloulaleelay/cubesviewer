@@ -75,8 +75,6 @@ function cubesviewerViewCubeExporter() {
 			view.cubesviewer.views.cube.exporter.exportFacts(view);
 			return false;
 		});
-
-
 	};
 
 	/*
@@ -96,7 +94,6 @@ function cubesviewerViewCubeExporter() {
 		var url = view.cubesviewer.options.cubesUrl + "/cube/" + view.cube.name + "/facts?" + $.param(params);
 		window.open(url, '_blank');
 		window.focus();
-
 	};
 
 	/*
@@ -106,40 +103,54 @@ function cubesviewerViewCubeExporter() {
 
 		var content = "";
 
+        var firstIndex = 0;
 		if (view.params.mode == "explore") {
 			var grid = $('#summaryTable-' + view.id);
+            firstIndex = 1;
 		} else {
 			var grid = $('#seriesTable-' + view.id);
 		}
 
 		var values = [];
-		for (var i = ((view.params.mode == "explore") ? 1 : 0); i < grid.jqGrid('getGridParam','colNames').length; i++) {
-			values.push ('"' + grid.jqGrid('getGridParam','colNames')[i] + '"');
+        var labels = grid.jqGrid('getGridParam','colNames');
+        var model = grid.jqGrid('getGridParam','colModel');
+        var data = grid.jqGrid('getGridParam', 'data');
+
+		for (var i = firstIndex; i < model.length; i++) {
+            if (view.params.columnHide[model[i].name])
+                continue;
+            var label = labels[i];
+            label = label.replace(/"/g, '\\"');
+            values.push('"' + label + '"');
 		}
+
 		content = content + (values.join(",")) + "\n";
 
-		//var m = grid.getDataIDs();
-		var m = grid.jqGrid('getGridParam', 'data');
-
-		for (var i = 0; i < m.length; i++) {
-		    var record = m[i];
+		for (var i = 0; i < data.length; i++) {
 		    values = [];
-		    //values.push ('"' + $('<div>' + record.key + '</div>').text() + '"');
-			//for (var j = ((view.params.mode == "explore") ? 2 : 1); j < grid.jqGrid('getGridParam','colNames').length; j++) {
-		    for (var j = ((view.params.mode == "explore") ? 1 : 0); j < grid.jqGrid('getGridParam','colModel').length; j++) {
-				var columnname = grid.jqGrid('getGridParam','colModel')[j].name;
-				var colval = record[columnname];
-				colval = $('<div>' + colval + '</div>').text();
-				if (colval == undefined) colval = 0;
-				values.push ('"' + colval + '"');
-			}
+		    for (var j = firstIndex; j < model.length; j++) {
+                var name = model[j].name;
+                if (view.params.columnHide[name])
+                    continue;
+                var colval = data[i][name];
+                colval = $('<div>' + colval + '</div>').text(); // TODO ???
+                if (colval == undefined) colval = 0;
+                colval = colval.replace(/"/g, '\\"');
+                values.push ('"' + colval + '"');
+            }
 		    content = content + (values.join(",")) + "\n";
 		}
 
 		var url = "data:text/csv;charset=utf-8," + encodeURIComponent(content);
-		window.open (url, "_blank");
-	};
-
+        var aLink = document.createElement('a');
+        var evt = document.createEvent("HTMLEvents");
+        var filename = view.params.name.replace(/\//g, '').replace(/\s+/g, '_');
+        evt.initEvent("click");
+        aLink.download = filename + '.csv';
+        aLink.href = url;
+        aLink.target = '_blank';
+        aLink.dispatchEvent(evt);
+  };
 };
 
 
@@ -152,3 +163,5 @@ cubesviewer.views.cube.exporter = new cubesviewerViewCubeExporter();
  * Bind events.
  */
 $(document).bind("cubesviewerViewDraw", { }, cubesviewer.views.cube.exporter.onViewDraw);
+
+// vim :set ts=4 sw=4:
