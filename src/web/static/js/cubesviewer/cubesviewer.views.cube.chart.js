@@ -64,7 +64,7 @@ function cubesviewerViewCubeChart() {
 		var len = nv.graphs.length;
 		while (len--) {
 			if (! ($.contains(document.documentElement, nv.graphs[len].container))) {
-			    // Element is detached, destroy graph
+				// Element is detached, destroy graph
 				nv.graphs.splice (len,1);
 			}
 		}
@@ -109,7 +109,8 @@ function cubesviewerViewCubeChart() {
 
 		// Only if data section is empty
 		if ($(view.container).find('.cv-view-viewdata').children().size() == 0) {
-			$(view.container).find('.cv-view-viewdata').append('<h3>Series Chart</h3>');
+			var title = view.params.name ? view.params.name : 'Series Chart';
+			$(view.container).find('.cv-view-viewdata').append('<h3>' + title + '</h3>');
 		}
 
 		// Load data
@@ -129,20 +130,20 @@ function cubesviewerViewCubeChart() {
 
 		menu.prepend(
 			'<li><a href="#" onclick="return false;"><span class="ui-icon ui-icon-calculator"></span>Chart Type</a><ul style="width: 180px;">' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
-	  		//'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-cumulative">Cumulative lines</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas</a></li>' +
-	  		'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
-	  	  '</ul></li>' +
-  		  '<div></div>'
-	  	);
+			'<li><a href="#" class="cv-view-chart-settype" data-charttype="pie">Pie</a></li>' +
+			'<li><a href="#" class="cv-view-chart-settype" data-charttype="bars-vertical">Bars Vertical</a></li>' +
+			'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines">Lines</a></li>' +
+			//'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-cumulative">Cumulative lines</a></li>' +
+			'<li><a href="#" class="cv-view-chart-settype" data-charttype="lines-stacked">Areas</a></li>' +
+			'<li><a href="#" class="cv-view-chart-settype" data-charttype="radar">Radar</a></li>' +
+		'</ul></li>' +
+		'<div></div>'
+		);
 
 		/*
 		menu.append(
-	  	  '<div></div>' +
-  		  '<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
+			'<div></div>' +
+			'<li><a href="#" class="cv-view-chart-export"><span class="ui-icon ui-icon-script"></span>Export image</a></li>'
 		);
 		*/
 
@@ -191,8 +192,9 @@ function cubesviewerViewCubeChart() {
 
 		// Check if we can produce a table
 		if (view.params.yaxis == null) {
+			var title = view.params.name ? view.params.name : 'Series Chart';
 			$('#' + view.id).find('.cv-view-viewdata').empty().append(
-					'<h3>Series Chart</h3><div><i>Cannot present chart: no <b>measure</b> has been selected.</i></div>'
+					'<h3>' + title + '</h3><div><i>Cannot present chart: no <b>measure</b> has been selected.</i></div>'
 			);
 			return;
 		}
@@ -230,12 +232,13 @@ function cubesviewerViewCubeChart() {
 	 * Draws Series Chart.
 	 */
 	this.drawChart = function(view, data) {
+		var title = view.params.name ? view.params.name : 'Series Chart';
 
 		$(view.container).find('.cv-view-viewdata').empty();
 
 		if (data.cells.length == 0) {
 			$(view.container).find('.cv-view-viewdata').empty().append(
-				'<h3>Series Chart</h3>' +
+				'<h3>' + title + '</h3>' +
 				'<div>Cannot present chart as no rows are returned by the current filtering, horizontal dimension, and drilldown combination.</div>'
 			);
 			return;
@@ -243,8 +246,8 @@ function cubesviewerViewCubeChart() {
 
 		$(view.container).find('.cv-view-viewdata').css("width", "99%");
 		$(view.container).find('.cv-view-viewdata').append(
-			'<h3>Series Chart</h3>' +
-			'<div id="seriesChart-' + view.id + '"  ><div><svg style="height: 400px;" /></div>' +
+			'<h3>' + title + '</h3>' +
+			'<div id="seriesChart-' + view.id + '"><div><svg style="height: 400px;" /></div>' +
 			'<div style="font-size: 8px; float: right;">' +
 			'<a href="" class="cv-chart-height" data-chart-height="400" >Small</a> ' +
 			'<a href="" class="cv-chart-height" data-chart-height="550" >Medium</a> ' +
@@ -258,13 +261,13 @@ function cubesviewerViewCubeChart() {
 
 		/*
 		$(view.container).find('#seriesChart-' + view.id).resizable({
-			 maxHeight: 800,
-			 minHeight: 220,
-			 //helper: "ui-resizable-helper",
-			 resize: function(event, ui) {
-		        ui.size.width = ui.originalSize.width;
-		     },
-		     alsoResize: '#seriesChart-' + view.id + '>div>svg'
+			maxHeight: 800,
+			minHeight: 220,
+			//helper: "ui-resizable-helper",
+			resize: function(event, ui) {
+				ui.size.width = ui.originalSize.width;
+			},
+			alsoResize: '#seriesChart-' + view.id + '>div>svg'
 		});
 		*/
 
@@ -313,92 +316,92 @@ function cubesviewerViewCubeChart() {
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 
-	    var d = [];
+		var d = [];
 
-	    var numRows = dataRows.length;
-	    var serieCount = 0;
-	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
-	    	for (var i = 1; i < colNames.length; i++) {
-	    		var value = e[colNames[i]];
-	    		if (value != undefined) {
-	    			serie.push( { "x": colNames[i], "y":  value } );
-	    		} else {
-	    			serie.push( { "x": colNames[i], "y":  0} );
-	    		}
-	    	}
-	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
-	    	if (view.params["chart-disabledseries"]) {
-	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
-	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
-	    		}
-	    	}
-	    	d.push(series);
-	    	serieCount++;
-	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+		var numRows = dataRows.length;
+		var serieCount = 0;
+		$(dataRows).each(function(idx, e) {
+			serie = [];
+			for (var i = 1; i < colNames.length; i++) {
+				var value = e[colNames[i]];
+				if (value != undefined) {
+					serie.push( { "x": colNames[i], "y":  value } );
+				} else {
+					serie.push( { "x": colNames[i], "y":  0} );
+				}
+			}
+			var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+			if (view.params["chart-disabledseries"]) {
+				if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+					series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+				}
+			}
+			d.push(series);
+			serieCount++;
+		});
+		d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 
-	    /*
-	    xticks = [];
-	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i * 10, colNames[i] ]);
-	    }
-	    */
+		/*
+		xticks = [];
+		for (var i = 1; i < colNames.length; i++) {
+			xticks.push([ i * 10, colNames[i] ]);
+		}
+		*/
 
-	    chartOptions = {
-	    	  //barColor: d3.scale.category20().range(),
-	    	  delay: 1200,
-	    	  groupSpacing: 0.1,
-	    	  //reduceXTicks: false,
-	    	  //staggerLabels: true
-	    };
+		chartOptions = {
+			  //barColor: d3.scale.category20().range(),
+			  delay: 1200,
+			  groupSpacing: 0.1,
+			  //reduceXTicks: false,
+			  //staggerLabels: true
+		};
 
-	    nv.addGraph(function() {
-	        var chart;
-	        chart = nv.models.multiBarChart()
-	          //.margin({bottom: 100})
-	          .transitionDuration(300)
-	          .margin({left: 120})
-	          ;
+		nv.addGraph(function() {
+			var chart;
+			chart = nv.models.multiBarChart()
+			  //.margin({bottom: 100})
+			  .transitionDuration(300)
+			  .margin({left: 120})
+			  ;
 
-	    	  if (	view.params["chart-barsvertical-stacked"] ) {
-	    		  chart.stacked ( view.params["chart-barsvertical-stacked"] );
-	    	  }
+			  if (	view.params["chart-barsvertical-stacked"] ) {
+				  chart.stacked ( view.params["chart-barsvertical-stacked"] );
+			  }
 
-	        chart.options(chartOptions);
-	        chart.multibar
-	          .hideable(true);
+			chart.options(chartOptions);
+			chart.multibar
+			  .hideable(true);
 
-	        chart.xAxis
-	            .axisLabel(xAxisLabel)
-	            .showMaxMin(true)
-	            //.tickFormat(d3.format(',0f'))
-	            ;
+			chart.xAxis
+				.axisLabel(xAxisLabel)
+				.showMaxMin(true)
+				//.tickFormat(d3.format(',0f'))
+				;
 
-	        chart.yAxis.tickFormat(d3.format(',.2f'));
+			chart.yAxis.tickFormat(d3.format(',.2f'));
 
-	        d3.select(container)
-	            .datum(d)
-	            .call(chart);
+			d3.select(container)
+				.datum(d)
+				.call(chart);
 
-	        nv.utils.windowResize(chart.update);
+			nv.utils.windowResize(chart.update);
 
-	    	  // Handler for state change
-	          chart.dispatch.on('stateChange', function(newState) {
-	        	  view.params["chart-barsvertical-stacked"] = newState.stacked;
-	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","),
-	        			  "disabled": {}
-	        	  };
-	        	  for (var i = 0; i < newState.disabled.length; i++) {
-	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-	        	  }
-	          });
+			  // Handler for state change
+			  chart.dispatch.on('stateChange', function(newState) {
+				  view.params["chart-barsvertical-stacked"] = newState.stacked;
+				  view.params["chart-disabledseries"] = {
+						  "key": view.params.drilldown.join(","),
+						  "disabled": {}
+				  };
+				  for (var i = 0; i < newState.disabled.length; i++) {
+					  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+				  }
+			  });
 
-	        //chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+			//chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-	        return chart;
-	    });
+			return chart;
+		});
 
 	}
 
@@ -409,126 +412,126 @@ function cubesviewerViewCubeChart() {
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 
-	    var d = [];
+		var d = [];
 
-	    // TODO: Check there's only one value column
+		// TODO: Check there's only one value column
 
-	    var numRows = dataRows.length;
-	    var serieCount = 0;
-	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
-	    	for (var i = 1; i < colNames.length; i++) {
-	    		if (colNames[i] in e) {
-	    			var value = e[colNames[i]];
-	    			serie.push( { "x": i, "y": value } );
-	    		} else {
-	    			serie.push( { "x": i, "y": 0 } );
-	    		}
-	    	}
-	    	var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
-	    	if (view.params["chart-disabledseries"]) {
-	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
-	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
-	    		}
-	    	}
-	    	d.push(series);
-	    	serieCount++;
-	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+		var numRows = dataRows.length;
+		var serieCount = 0;
+		$(dataRows).each(function(idx, e) {
+			serie = [];
+			for (var i = 1; i < colNames.length; i++) {
+				if (colNames[i] in e) {
+					var value = e[colNames[i]];
+					serie.push( { "x": i, "y": value } );
+				} else {
+					serie.push( { "x": i, "y": 0 } );
+				}
+			}
+			var series = { "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis };
+			if (view.params["chart-disabledseries"]) {
+				if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+					series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+				}
+			}
+			d.push(series);
+			serieCount++;
+		});
+		d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 
-	    /*
-	    xticks = [];
-	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i, colNames[i] ]);
-	    }
-	    */
+		/*
+		xticks = [];
+		for (var i = 1; i < colNames.length; i++) {
+			xticks.push([ i, colNames[i] ]);
+		}
+		*/
 
-	    if (view.params.charttype != "lines-stacked") {
+		if (view.params.charttype != "lines-stacked") {
 
-		    nv.addGraph(function() {
-		    	var chart = nv.models.lineChart()
-		    		.useInteractiveGuideline(true)
-		    		.margin({left: 120})
-		    		;
+			nv.addGraph(function() {
+				var chart = nv.models.lineChart()
+					.useInteractiveGuideline(true)
+					.margin({left: 120})
+					;
 
-		    	chart.xAxis
-		    		.axisLabel(xAxisLabel)
-		    		.tickFormat(function(d,i) {
-				                return (colNames[d]);
-				     })	;
+				chart.xAxis
+					.axisLabel(xAxisLabel)
+					.tickFormat(function(d,i) {
+								return (colNames[d]);
+					 })	;
 
-		    	chart.yAxis
-		    		//.axisLabel("Y-axis Label")
-		    		.tickFormat(d3.format(',.2f'));
-		    		;
+				chart.yAxis
+					//.axisLabel("Y-axis Label")
+					.tickFormat(d3.format(',.2f'));
+					;
 
-		    	d3.select(container)
-		    		.datum(d)
-		    		.transition().duration(500).call(chart);
+				d3.select(container)
+					.datum(d)
+					.transition().duration(500).call(chart);
 
-		    	nv.utils.windowResize(chart.update);
+				nv.utils.windowResize(chart.update);
 
-		    	  // Handler for state change
-		          chart.dispatch.on('stateChange', function(newState) {
-		        	  view.params["chart-disabledseries"] = {
-		        			  "key": view.params.drilldown.join(","),
-		        			  "disabled": {}
-		        	  };
-		        	  for (var i = 0; i < newState.disabled.length; i++) {
-		        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-		        	  }
-		          });
+				  // Handler for state change
+				  chart.dispatch.on('stateChange', function(newState) {
+					  view.params["chart-disabledseries"] = {
+							  "key": view.params.drilldown.join(","),
+							  "disabled": {}
+					  };
+					  for (var i = 0; i < newState.disabled.length; i++) {
+						  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+					  }
+				  });
 
 
-		    	return chart;
-		    });
+				return chart;
+			});
 
-	    } else {
+		} else {
 
-		    nv.addGraph(function() {
-	    	  var chart = nv.models.stackedAreaChart()
-	    	                //.x(function(d) { return d[0] })
-	    	                //.y(function(d) { return d[1] })
-	    	  				.margin({left: 130})
-	    	                .clipEdge(true)
-	    	                .useInteractiveGuideline(true);
+			nv.addGraph(function() {
+			  var chart = nv.models.stackedAreaChart()
+							//.x(function(d) { return d[0] })
+							//.y(function(d) { return d[1] })
+			  				.margin({left: 130})
+							.clipEdge(true)
+							.useInteractiveGuideline(true);
 
-	    	  if (	view.params["chart-stackedarea-style"] ) {
-	    		  chart.style ( view.params["chart-stackedarea-style"] );
-	    	  }
+			  if (	view.params["chart-stackedarea-style"] ) {
+				  chart.style ( view.params["chart-stackedarea-style"] );
+			  }
 
-	    	  chart.xAxis
-	    	  	  .axisLabel(xAxisLabel)
-	    	      .showMaxMin(false)
-	    	      .tickFormat(function(d,i) {
-			                return (colNames[d]);
-			       })	;
+			  chart.xAxis
+			  	  .axisLabel(xAxisLabel)
+				  .showMaxMin(false)
+				  .tickFormat(function(d,i) {
+							return (colNames[d]);
+				   })	;
 
-	    	  chart.yAxis
-	    	      .tickFormat(d3.format(',.2f'));
+			  chart.yAxis
+				  .tickFormat(d3.format(',.2f'));
 
-	    	  d3.select(container)
-	    	    .datum(d)
-	    	      .transition().duration(500).call(chart);
+			  d3.select(container)
+				.datum(d)
+				  .transition().duration(500).call(chart);
 
-	    	  nv.utils.windowResize(chart.update);
+			  nv.utils.windowResize(chart.update);
 
-	    	  // Handler for state change
-	          chart.dispatch.on('stateChange', function(newState) {
-	        	  view.params["chart-stackedarea-style"] = newState.style;
-	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","),
-	        			  "disabled": {}
-	        	  };
-	        	  for (var i = 0; i < newState.disabled.length; i++) {
-	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-	        	  }
-	          });
+			  // Handler for state change
+			  chart.dispatch.on('stateChange', function(newState) {
+				  view.params["chart-stackedarea-style"] = newState.style;
+				  view.params["chart-disabledseries"] = {
+						  "key": view.params.drilldown.join(","),
+						  "disabled": {}
+				  };
+				  for (var i = 0; i < newState.disabled.length; i++) {
+					  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+				  }
+			  });
 
-	    	  return chart;
-	    	});
+			  return chart;
+			});
 
-	    }
+		}
 
 
 
@@ -542,62 +545,62 @@ function cubesviewerViewCubeChart() {
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.getDimensionParts(view.params.xaxis).label : "None")
 
-	    var d = [];
+		var d = [];
 
 
-	    numRows = dataRows.length;
-	    var serieCount = 1;
-	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
-	    	for (var i = 1; i < colNames.length; i++) {
-	    		if ( (colNames[i] in e) && (e[colNames[i]] != null) && (e[colNames[i]]) ) {
-	    			var value = e[colNames[i]];
-	    			serie.push( { "x": i, "y": parseFloat(value) } );
-	    		} else {
-	    			serie.push( { "x": i, "y": 0 } );
-	    		}
-	    	}
-	    	d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
-	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+		numRows = dataRows.length;
+		var serieCount = 1;
+		$(dataRows).each(function(idx, e) {
+			serie = [];
+			for (var i = 1; i < colNames.length; i++) {
+				if ( (colNames[i] in e) && (e[colNames[i]] != null) && (e[colNames[i]]) ) {
+					var value = e[colNames[i]];
+					serie.push( { "x": i, "y": parseFloat(value) } );
+				} else {
+					serie.push( { "x": i, "y": 0 } );
+				}
+			}
+			d.push({ "values": serie, "key": e["key"] != "" ? e["key"] : view.params.yaxis });
+		});
+		d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 
-	    nv.addGraph(function() {
-	        var chart = nv.models.cumulativeLineChart()
-                          //.x(function(d) { return d.x })
-		                  //.y(function(d) { return d.y })
-		                  .color(d3.scale.category20().range())
-	                      //.color(d3.scale.category10().range())
-		                  .useInteractiveGuideline(true)
-	                      ;
+		nv.addGraph(function() {
+			var chart = nv.models.cumulativeLineChart()
+						  //.x(function(d) { return d.x })
+						  //.y(function(d) { return d.y })
+						  .color(d3.scale.category20().range())
+						  //.color(d3.scale.category10().range())
+						  .useInteractiveGuideline(true)
+						  ;
 
-	         chart.xAxis
-	            .axisLabel(xAxisLabel)
-			      .tickFormat(function(d,i) {
-			                return (colNames[d]);
-			       })	;
+			 chart.xAxis
+				.axisLabel(xAxisLabel)
+				  .tickFormat(function(d,i) {
+							return (colNames[d]);
+				   })	;
 
-	         chart.yAxis
-	         .tickFormat(d3.format(',.2f'));
+			 chart.yAxis
+			 .tickFormat(d3.format(',.2f'));
 
-	        d3.select(container)
-	            .datum(d)
-	          .transition().duration(500)
-	            .call(chart);
+			d3.select(container)
+				.datum(d)
+			  .transition().duration(500)
+				.call(chart);
 
-    	  // Handler for state change
-	          chart.dispatch.on('stateChange', function(newState) {
-	        	  view.params["chart-stackedarea-style"] = newState.style;
-	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","),
-	        			  "disabled": newState.disabled
-	        	  };
-	          });
+		  // Handler for state change
+			  chart.dispatch.on('stateChange', function(newState) {
+				  view.params["chart-stackedarea-style"] = newState.style;
+				  view.params["chart-disabledseries"] = {
+						  "key": view.params.drilldown.join(","),
+						  "disabled": newState.disabled
+				  };
+			  });
 
-	        //TODO: Figure out a good way to do this automatically
-	        nv.utils.windowResize(chart.update);
+			//TODO: Figure out a good way to do this automatically
+			nv.utils.windowResize(chart.update);
 
-	        return chart;
-      });
+			return chart;
+	  });
 
 	};
 	*/
@@ -605,85 +608,86 @@ function cubesviewerViewCubeChart() {
 	/**
 	 */
 	this.drawChartPie = function (view, colNames, dataRows, dataTotals) {
+	var title = view.params.name ? view.params.name : 'Series Chart';
 
 		var container = $('#seriesChart-' + view.id).find("svg").get(0);
 		var xAxisLabel = ( (view.params.xaxis != null) ? view.cube.cvdim_parts(view.params.xaxis).label : "None")
 
-	    var d = [];
+		var d = [];
 
 		// Check if we can produce a pie
 		if (colNames.length > 2) {
 			$('#' + view.id).find('.cv-view-viewdata').empty();
-			$('#' + view.id).find('.cv-view-viewdata').append('<h3>Series Chart</h3><div><i>Cannot present a Pie Chart when more than one column is present.</i></div>');
+			$('#' + view.id).find('.cv-view-viewdata').append('<h3>' + title + '</h3><div><i>Cannot present a Pie Chart when more than one column is present.</i></div>');
 			return;
 		}
 
-	    var numRows = dataRows.length;
-	    var serieCount = 0;
-	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
-	    	var value = e[colNames[1]];
-    		if ((value != undefined) && (value > 0)) {
+		var numRows = dataRows.length;
+		var serieCount = 0;
+		$(dataRows).each(function(idx, e) {
+			serie = [];
+			var value = e[colNames[1]];
+			if ((value != undefined) && (value > 0)) {
 
-    	    	var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
-    	    	if (view.params["chart-disabledseries"]) {
-    	    		if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
-    	    			series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
-    	    		}
-    	    	}
+				var series = { "y": value, "key": e["key"] != "" ? e["key"] : colNames[0] };
+				if (view.params["chart-disabledseries"]) {
+					if (view.params["chart-disabledseries"]["key"] == (view.params.drilldown.join(","))) {
+						series.disabled = !! view.params["chart-disabledseries"]["disabled"][series.key];
+					}
+				}
 
-    	    	d.push(series);
-    			serieCount++;
+				d.push(series);
+				serieCount++;
 
-    		}
+			}
 
-	    });
-	    d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
+		});
+		d.sort(function(a,b) { return a.key < b.key ? -1 : (a.key > b.key ? +1 : 0) });
 
-	    xticks = [];
-	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i - 1, colNames[i] ]);
-	    }
+		xticks = [];
+		for (var i = 1; i < colNames.length; i++) {
+			xticks.push([ i - 1, colNames[i] ]);
+		}
 
-	    nv.addGraph(function() {
+		nv.addGraph(function() {
 
-	        var chart = nv.models.pieChart()
-	            .x(function(d) { return d.key })
-	            .y(function(d) { return d.y })
-	            //.color(d3.scale.category20().range())
-	            //.width(width)
-	            //.height(height)
-	            .labelType("percent")
-	            //.donut(true);
+			var chart = nv.models.pieChart()
+				.x(function(d) { return d.key })
+				.y(function(d) { return d.y })
+				//.color(d3.scale.category20().range())
+				//.width(width)
+				//.height(height)
+				.labelType("percent")
+				//.donut(true);
 
-	        /*
-		    chart.pie
-		        .startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
-		        .endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
-		        */
+			/*
+			chart.pie
+				.startAngle(function(d) { return d.startAngle/2 -Math.PI/2 })
+				.endAngle(function(d) { return d.endAngle/2 -Math.PI/2 });
+				*/
 
-	          d3.select(container)
-	              .datum(d)
-	            .transition().duration(1200)
-	              //.attr('width', width)
-	              //.attr('height', height)
-	              .call(chart);
+			  d3.select(container)
+				  .datum(d)
+				.transition().duration(1200)
+				  //.attr('width', width)
+				  //.attr('height', height)
+				  .call(chart);
 
-	        nv.utils.windowResize(chart.update);
+			nv.utils.windowResize(chart.update);
 
-	    	  // Handler for state change
-	          chart.dispatch.on('stateChange', function(newState) {
-	        	  view.params["chart-disabledseries"] = {
-	        			  "key": view.params.drilldown.join(","),
-	        			  "disabled": {}
-	        	  };
-	        	  for (var i = 0; i < newState.disabled.length; i++) {
-	        		  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
-	        	  }
-	          });
+			  // Handler for state change
+			  chart.dispatch.on('stateChange', function(newState) {
+				  view.params["chart-disabledseries"] = {
+						  "key": view.params.drilldown.join(","),
+						  "disabled": {}
+				  };
+				  for (var i = 0; i < newState.disabled.length; i++) {
+					  view.params["chart-disabledseries"]["disabled"][d[i]["key"]] =  newState.disabled[i];
+				  }
+			  });
 
-	        return chart;
-	    });
+			return chart;
+		});
 
 	};
 
@@ -700,52 +704,52 @@ function cubesviewerViewCubeChart() {
 			return;
 		}
 
-	    var d = [];
+		var d = [];
 
-	    numRows = dataRows.length;
-	    $(dataRows).each(function(idx, e) {
-	    	serie = [];
-	    	for (var i = 1; i < colNames.length; i++) {
-	    		var value = e[colNames[i]];
-	    		if (value != undefined) {
-	    			serie.push( [i-1, value] );
-	    		} else {
-	    			serie.push( [i-1, 0] );
-	    		}
-	    	}
-	    	d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
-	    });
-	    d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
+		numRows = dataRows.length;
+		$(dataRows).each(function(idx, e) {
+			serie = [];
+			for (var i = 1; i < colNames.length; i++) {
+				var value = e[colNames[i]];
+				if (value != undefined) {
+					serie.push( [i-1, value] );
+				} else {
+					serie.push( [i-1, 0] );
+				}
+			}
+			d.push({ data: serie, label: e["key"] != "" ? e["key"] : view.params.yaxis });
+		});
+		d.sort(function(a,b) { return a.label < b.label ? -1 : (a.label > b.label ? +1 : 0) });
 
-	    xticks = [];
-	    for (var i = 1; i < colNames.length; i++) {
-    		xticks.push([ i - 1, colNames[i] ]);
-	    }
+		xticks = [];
+		for (var i = 1; i < colNames.length; i++) {
+			xticks.push([ i - 1, colNames[i] ]);
+		}
 
-	    view.flotrDraw = Flotr.draw(container, d, {
-	    	HtmlText: ! view.doExport,
-	    	shadowSize: 2,
-	        radar: {
-	            show: true
-	        },
-	        mouse: {
-	            track: true,
-	            relative: true
-	        },
-	        grid: {
-	            circular: true,
-	            minorHorizontalLines: true
-	        },
-	        legend: {
-	            position: "se",
-	            backgroundColor: "#D2E8FF"
-	        },
-	        xaxis: {
-	            ticks: xticks
-	        },
-	        yaxis: {
-	        }
-	    });
+		view.flotrDraw = Flotr.draw(container, d, {
+			HtmlText: ! view.doExport,
+			shadowSize: 2,
+			radar: {
+				show: true
+			},
+			mouse: {
+				track: true,
+				relative: true
+			},
+			grid: {
+				circular: true,
+				minorHorizontalLines: true
+			},
+			legend: {
+				position: "se",
+				backgroundColor: "#D2E8FF"
+			},
+			xaxis: {
+				ticks: xticks
+			},
+			yaxis: {
+			}
+		});
 
 	};
 
