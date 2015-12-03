@@ -160,6 +160,7 @@ function cubesviewerViewCubeDateFilter () {
 								+ '<option value="auto-last12m">Last year</option>'
 								+ '<option value="auto-last24m">Last 2 years</option>'
 								+ '<option value="auto-january1st">From January 1st</option>'
+								+ '<option value="auto-lastweek">Last week</option>'
 								+ '<option value="auto-beforeyesterday">Before yesterday</option>'
 								+ '<option value="auto-yesterday">Yesterday</option>'
 								+ '</optgroup>' + '</select> ' + 'Range: '
@@ -171,14 +172,14 @@ function cubesviewerViewCubeDateFilter () {
 			changeYear : true,
 			dateFormat : "yy-mm-dd",
 			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
+			firstDay: cubesviewer.options.datepickerFirstDay
 		});
 		$("[name='date_end']", container).datepicker({
 			changeMonth : true,
 			changeYear : true,
 			dateFormat : "yy-mm-dd",
 			showWeek: cubesviewer.options.datepickerShowWeek,
-		    firstDay: cubesviewer.options.datepickerFirstDay
+			firstDay: cubesviewer.options.datepickerFirstDay
 		});
 
 		$("[name='date_start']", container).attr('autocomplete', 'off');
@@ -189,7 +190,7 @@ function cubesviewerViewCubeDateFilter () {
 			datefilter.mode = $("[name='date_mode']", container).val();
 			datefilter.date_from = $("[name='date_start']", container).val();
 			datefilter.date_to = $("[name='date_end']", container).val();
-			view.cubesviewer.views.redrawView (view);
+			view.cubesviewer.views.redrawView(view);
 		});
 
 		// Set initial values
@@ -205,11 +206,8 @@ function cubesviewerViewCubeDateFilter () {
 
 	// Adds a date filter
 	this.selectDateFilter = function(view, dimension, enabled) {
-
 		var cube = view.cube;
-
 		// TODO: Show a notice if the dimension already has a date filter (? and cut filter)
-
 		if (dimension != "") {
 			if (enabled == "1") {
 				view.params.datefilters.push({
@@ -229,9 +227,7 @@ function cubesviewerViewCubeDateFilter () {
 		} else {
 			view.params.datefilters = [];
 		}
-
 		view.cubesviewer.views.redrawView(view);
-
 	};
 
 	/*
@@ -267,12 +263,18 @@ function cubesviewerViewCubeDateFilter () {
 				date_from = new Date();
 				date_from.setDate(date_from.getDate() - 1);
 				date_to = new Date();
-        date_to.setDate(date_from.getDate());
+				date_to.setDate(date_from.getDate());
 			} else if (datefilter.mode == "auto-beforeyesterday") {
 				date_from = new Date();
 				date_from.setDate(date_from.getDate() - 2);
 				date_to = new Date();
-        date_to.setDate(date_from.getDate());
+				date_to.setDate(date_from.getDate());
+			} else if (datefilter.mode == "auto-lastweek") {
+				date_from = this._getMonday(new Date());
+				date_from.setDate(date_from.getDate() - 7);
+				date_to = new Date();
+				date_to.setTime(date_from.getTime());
+				date_to.setDate(date_from.getDate() + 6);
 			}
 		} else if (datefilter.mode == "custom") {
 			if ((datefilter.date_from != null) && (datefilter.date_from != "")) {
@@ -286,17 +288,14 @@ function cubesviewerViewCubeDateFilter () {
 		if ((date_from != null) || (date_to != null)) {
 			var datefiltervalue = "";
 			if (date_from != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(view, datefilter, date_from);
+				datefiltervalue = datefiltervalue + this._datefiltercell(view, datefilter, date_from);
 			datefiltervalue = datefiltervalue + "-";
 			if (date_to != null)
-				datefiltervalue = datefiltervalue
-						+ this._datefiltercell(view, datefilter, date_to);
+				datefiltervalue = datefiltervalue + this._datefiltercell(view, datefilter, date_to);
 			return datefiltervalue;
 		} else {
 			return null;
 		}
-
 	};
 
 	this._datefiltercell = function(view, datefilter, tdate) {
@@ -331,16 +330,29 @@ function cubesviewerViewCubeDateFilter () {
 	};
 
 	this._weekNumber = function(d) {
-	    // Copy date so don't modify original
-	    d = new Date(d);
-	    d.setHours(0,0,0);
-	    // Get first day of year
-	    var yearStart = new Date(d.getFullYear(),0,1);
-	    // Calculate full weeks to nearest Thursday
-	    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
-	    // Return array of year and week number
-	    return weekNo;
+		// Copy date so don't modify original
+		d = new Date(d);
+		d.setHours(0,0,0);
+		// Get first day of year
+		var yearStart = new Date(d.getFullYear(),0,1);
+		// Calculate full weeks to nearest Thursday
+		var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+		// Return array of year and week number
+		return weekNo;
 	};
+
+	// http://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
+	this._getMonday = function (date) {
+		date = new Date(date);
+		var day = date.getDay();
+		var diff = date.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+		var result = new Date(date.setDate(diff));
+		result.setHours(0);
+		result.setMinutes(0);
+		result.setSeconds(0);
+		return result;
+	}
+
 
 	/*
 	 * Builds Query Cuts (overrides default cube cut build function).
@@ -367,12 +379,10 @@ function cubesviewerViewCubeDateFilter () {
  * Extend model prototype to support datefilter dimensions.
  */
 cubes.Dimension.prototype.isDateDimension = function()  {
-
 	// Inform if a dimension is a date dimension and can be used as a date
 	// filter (i.e. with range selection tool).
 	return ((this.role == "time") &&
-			((! ("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
-
+			((!("cv-datefilter" in this.info)) || (this.info["cv-datefilter"] == true)) );
 };
 
 /*
