@@ -392,9 +392,10 @@ function cubesviewerViewCubeExplore() {
 		}
 
 		$(view.container).find('.cv-view-viewdata').empty();
+		// <div style="width: 500px"> is a dirty hack to prevent autoWidthColumn expansion
 		$(view.container).find('.cv-view-viewdata').append(
-				'<h3>' + title + '</h3>' + '<table id="summaryTable-'
-						+ view.id + '"></table>' + '<div id="summaryPager-'
+				'<h3>' + title + '</h3>' + '<div style="width: 500px"><table id="summaryTable-'
+						+ view.id + '"></table></div>' + '<div id="summaryPager-'
 						+ view.id + '"></div>');
 
 		var colNames = [];
@@ -485,10 +486,10 @@ function cubesviewerViewCubeExplore() {
 							sortorder : cubesviewer.views.cube.explore.defineColumnSort(view, ["key", "desc"])[1],
 							footerrow : true,
 							userDataOnFooter : true,
-							forceFit : true,
+							forceFit : false,
 							shrinkToFit : false,
-							width: cubesviewer.options.tableResizeHackMinWidth,
-							//autowidth: true,
+							//width: cubesviewer.options.tableResizeHackMinWidth,
+							autowidth: true,
 							multiselect : true,
 							multiboxonly : true,
 
@@ -523,11 +524,8 @@ function cubesviewerViewCubeExplore() {
 							},
 							resizeStop: view.cubesviewer.views.cube.explore._onTableResize (view),
 							onSortCol: view.cubesviewer.views.cube.explore._onTableSort (view),
-
 						});
-
 		this.cubesviewer.views.cube._adjustGridSize(); // remember to copy also the window.bind-resize init
-
 
 	};
 
@@ -545,7 +543,7 @@ function cubesviewerViewCubeExplore() {
 
 	this.onTableResize = function (view, width, index) {
 		// Empty implementation, to be overrided
-		//alert("resize column " + index + " to " + width + " pixels");
+		console.log("resize column " + index + " to " + width + " pixels");
 	};
 	this.onTableLoaded = function (view) {
 		// Empty implementation, to be overrided
