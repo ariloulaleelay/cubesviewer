@@ -31,172 +31,172 @@
  */
 function cubesviewer () {
 
-	// CubesViewer version
-	this.version = "0.11-devel";
+    // CubesViewer version
+    this.version = "0.11-devel";
 
-	// Default options
-	this.options = {
-		cubesUrl : null,
-		cubesLang : null,
-		pagingOptions: [50, 100, 250, 1000, 10000],
-		datepickerShowWeek: true,
-		datepickerFirstDay: 1,
-		tableResizeHackMinWidth: 350,
-		jsonRequestType: "json" // "json | jsonp"
-	};
+    // Default options
+    this.options = {
+        cubesUrl : null,
+        cubesLang : null,
+        pagingOptions: [50, 100, 250, 1000, 10000],
+        datepickerShowWeek: true,
+        datepickerFirstDay: 1,
+        tableResizeHackMinWidth: 350,
+        jsonRequestType: "json" // "json | jsonp"
+    };
 
-	// Cubes server.
-	this.cubesserver = null;
-
-
-
-	/*
-	 * Show a global alert
-	 */
-	this.alert = function (message) {
-		alert ("CubesViewer " + this.version + "\n\n" + message);
-	}
-
-	/*
-	 * Refresh
-	 */
-	this.refresh = function() {
-		$(document).trigger("cubesviewerRefresh");
-	}
-
-	/*
-	 * Ajax handler for cubes library
-	 */
-	this.cubesAjaxHandler = function (settings) {
-		return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
-	};
+    // Cubes server.
+    this.cubesserver = null;
 
 
-	/*
-	 * Cubes centralized request
-	 */
-	this.cubesRequest = function(path, params, successCallback) {
 
-		// TODO: normalize how URLs are used (full URL shall come from client code)
-		if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
+    /*
+     * Show a global alert
+     */
+    this.alert = function (message) {
+        alert ("CubesViewer " + this.version + "\n\n" + message);
+    }
 
-		var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
+    /*
+     * Refresh
+     */
+    this.refresh = function() {
+        $(document).trigger("cubesviewerRefresh");
+    }
 
-		jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
-
-		return jqxhr;
-
-	}
-
-	this._cubesRequestCallback = function(pCallback) {
-		var callback = pCallback;
-		return function(data, status) {
-			pCallback(data);
-		}
-	};
-
-	/*
-	 * Default XHR error handler for CubesRequests
-	 */
-	this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
-		// TODO: These alerts are not acceptable.
-		if (xhr.status == 401) {
-			cubesviewer.alert("Unauthorized.");
-		} else if (xhr.status == 403) {
-			cubesviewer.alert("Forbidden.");
-		} else if (xhr.status == 400) {
-			cubesviewer.alert($.parseJSON(xhr.responseText).message);
-		} else {
-			console.debug (xhr);
-			cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
-										"Please try again or contact the application administrator if the problem persists.\n");
-		}
-		//$('.ajaxloader').hide();
-	};
+    /*
+     * Ajax handler for cubes library
+     */
+    this.cubesAjaxHandler = function (settings) {
+        return cubesviewer.cubesRequest(settings.url, settings.data || [], settings.success);
+    };
 
 
-	/*
-	 * Change language for Cubes operations
-	 * (locale must be one of the possible languages for the model).
-	 */
-	this.changeCubesLang = function(lang) {
+    /*
+     * Cubes centralized request
+     */
+    this.cubesRequest = function(path, params, successCallback) {
 
-		this.options.cubesLang = (lang == "" ? null : lang);
+        // TODO: normalize how URLs are used (full URL shall come from client code)
+        if (path.charAt(0) == '/') path = this.options["cubesUrl"] + path;
 
-		// Reinitialize system
-		this.refresh();
+        var jqxhr = $.get(path, params, this._cubesRequestCallback(successCallback), cubesviewer.options.jsonRequestType);
 
-	};
+        jqxhr.fail (cubesviewer.defaultRequestErrorHandler);
 
-	// common functions
-	this.common = {};
+        return jqxhr;
 
-	this.common.escapeHtml = function(str) {
-			var result = str;
-			return result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-		}
+    }
 
-	/*
-	 * Initialize CubesViewer library.
-	 */
-	this.init = function (options) {
+    this._cubesRequestCallback = function(pCallback) {
+        var callback = pCallback;
+        return function(data, status) {
+            pCallback(data);
+        }
+    };
 
-		$.extend(cubesviewer.options, options);
+    /*
+     * Default XHR error handler for CubesRequests
+     */
+    this.defaultRequestErrorHandler = function(xhr, textStatus, errorThrown) {
+        // TODO: These alerts are not acceptable.
+        if (xhr.status == 401) {
+            cubesviewer.alert("Unauthorized.");
+        } else if (xhr.status == 403) {
+            cubesviewer.alert("Forbidden.");
+        } else if (xhr.status == 400) {
+            cubesviewer.alert($.parseJSON(xhr.responseText).message);
+        } else {
+            console.debug (xhr);
+            cubesviewer.showInfoMessage("CubesViewer: An error occurred while accessing the data server.\n\n" +
+                                        "Please try again or contact the application administrator if the problem persists.\n");
+        }
+        //$('.ajaxloader').hide();
+    };
 
-		// Avoid square brackets in serialized array params
-		$.ajaxSetup({
-			traditional : true
-		});
 
-		// Initialize Cubes client library
-		cubesviewer.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
-		cubesviewer.cubesserver.connect (this.options["cubesUrl"], function() {
-			cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
-			$(document).trigger ("cubesviewerInitialized", [ this ]);
-		} );
+    /*
+     * Change language for Cubes operations
+     * (locale must be one of the possible languages for the model).
+     */
+    this.changeCubesLang = function(lang) {
 
-	};
+        this.options.cubesLang = (lang == "" ? null : lang);
 
-	/*
-	 * Show quick tip message.
-	 */
-	this.showInfoMessage = function(message, delay) {
+        // Reinitialize system
+        this.refresh();
 
-		if (delay == undefined) delay = 5000;
+    };
 
-		if ($('#cv-cache-indicator').size() < 1) {
+    // common functions
+    this.common = {};
 
-			$("body").append('<div id="cv-cache-indicator" class="cv-view-panel yui3-cssreset" style="display: none;"></div>')
-			$('#cv-cache-indicator').qtip({
-				   content: 'NO MESSAGE DEFINED',
-				   position: {
-					   my: 'bottom right',
-					   at: 'bottom right',
-					   target: $(window),
-					   adjust: {
-						   x: -10,
-						   y: -10
-					   }
-				   },
-				   style: {
-					   classes: 'fixed',
-					   tip: {
-						   corner: false
-					   }
-				   },
-				   show: {
-					   delay: 0,
-					   event: ''
-				   },
-				   hide: {
-					   inactive: delay
-				   }
-			});
-		}
+    this.common.escapeHtml = function(str) {
+            var result = str;
+            return result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
 
-		$('#cv-cache-indicator').qtip('option', 'content.text', message);
-		$('#cv-cache-indicator').qtip('toggle', true);
-	};
+    /*
+     * Initialize CubesViewer library.
+     */
+    this.init = function (options) {
+
+        $.extend(cubesviewer.options, options);
+
+        // Avoid square brackets in serialized array params
+        $.ajaxSetup({
+            traditional : true
+        });
+
+        // Initialize Cubes client library
+        cubesviewer.cubesserver = new cubes.Server(cubesviewer.cubesAjaxHandler);
+        cubesviewer.cubesserver.connect (this.options["cubesUrl"], function() {
+            cubesviewer.showInfoMessage ('Cubes client initialized (server version: ' + cubesviewer.cubesserver.server_version + ')');
+            $(document).trigger ("cubesviewerInitialized", [ this ]);
+        } );
+
+    };
+
+    /*
+     * Show quick tip message.
+     */
+    this.showInfoMessage = function(message, delay) {
+
+        if (delay == undefined) delay = 5000;
+
+        if ($('#cv-cache-indicator').size() < 1) {
+
+            $("body").append('<div id="cv-cache-indicator" class="cv-view-panel yui3-cssreset" style="display: none;"></div>')
+            $('#cv-cache-indicator').qtip({
+                   content: 'NO MESSAGE DEFINED',
+                   position: {
+                       my: 'bottom right',
+                       at: 'bottom right',
+                       target: $(window),
+                       adjust: {
+                           x: -10,
+                           y: -10
+                       }
+                   },
+                   style: {
+                       classes: 'fixed',
+                       tip: {
+                           corner: false
+                       }
+                   },
+                   show: {
+                       delay: 0,
+                       event: ''
+                   },
+                   hide: {
+                       inactive: delay
+                   }
+            });
+        }
+
+        $('#cv-cache-indicator').qtip('option', 'content.text', message);
+        $('#cv-cache-indicator').qtip('toggle', true);
+    };
 
 };
 
@@ -204,64 +204,64 @@ function cubesviewer () {
 /* Extensions to cubesviewer client lib */
 cubes.Dimension.prototype.hierarchies_count = function()  {
 
-	var count = 0;
-	for (hiename in this.hierarchies) {
-		if (this.hierarchies.hasOwnProperty(hiename)) {
-			count++;
-		}
-	}
-	return count;
+    var count = 0;
+    for (hiename in this.hierarchies) {
+        if (this.hierarchies.hasOwnProperty(hiename)) {
+            count++;
+        }
+    }
+    return count;
 };
 cubes.Dimension.prototype.default_hierarchy = function()  {
-	return this.hierarchies[this.default_hierarchy_name];
+    return this.hierarchies[this.default_hierarchy_name];
 };
 cubes.Cube.prototype.cvdim_dim = function(dimensionString) {
-	// Get a dimension by name. Accepts dimension hierarchy and level in the input string.
-	var dimname = dimensionString;
-	if (dimensionString.indexOf('@') > 0) {
-		dimname = dimensionString.split("@")[0];
-	} else if (dimensionString.indexOf(':') > 0) {
-		dimname = dimensionString.split(":")[0];
-	}
+    // Get a dimension by name. Accepts dimension hierarchy and level in the input string.
+    var dimname = dimensionString;
+    if (dimensionString.indexOf('@') > 0) {
+        dimname = dimensionString.split("@")[0];
+    } else if (dimensionString.indexOf(':') > 0) {
+        dimname = dimensionString.split(":")[0];
+    }
 
-	return this.dimension(dimname);
+    return this.dimension(dimname);
 };
 cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
-	// Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
+    // Get a dimension info by name. Accepts dimension hierarchy and level in the input string.
 
-	var dim = this.cvdim_dim(dimensionString);
-	var hie = dim.default_hierarchy();
+    var dim = this.cvdim_dim(dimensionString);
+    var hie = dim.default_hierarchy();
 
-	if (dimensionString.indexOf("@") > 0) {
-		var hierarchyName = dimensionString.split("@")[1].split(":")[0];
-		hie = dim.hierarchy(hierarchyName);
-	}
+    if (dimensionString.indexOf("@") > 0) {
+        var hierarchyName = dimensionString.split("@")[1].split(":")[0];
+        hie = dim.hierarchy(hierarchyName);
+    }
 
-	var lev = null;
-	if (dimensionString.indexOf(":") > 0) {
-		var levelname = dimensionString.split(":")[1];
-		lev = dim.level(levelname);
-	} else {
-		lev = dim.level(hie.levels[0]);
-	}
+    var lev = null;
+    if (dimensionString.indexOf(":") > 0) {
+        var levelname = dimensionString.split(":")[1];
+        lev = dim.level(levelname);
+    } else {
+        lev = dim.level(hie.levels[0]);
+    }
 
-	var depth = null;
-	for (var i = 0; i < hie.levels.length; i++) {
-		if (lev.name == hie.levels[i]) {
-			depth = i + 1;
-			break;
-		}
-	}
+    var depth = null;
+    for (var i = 0; i < hie.levels.length; i++) {
+        if (lev.name == hie.levels[i]) {
+            depth = i + 1;
+            break;
+        }
+    }
 
-	return {
-		dimension: dim,
-		level: lev,
-		depth: depth,
-		hierarchy: hie,
-		label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
-		labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
-		fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
-	};
+    return {
+        dimension: dim,
+        level: lev,
+        depth: depth,
+        hierarchy: hie,
+        label: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ) + ( hie.levels.length > 1 ? (": " + lev.label) : "" ),
+        labelNoLevel: dim.label + ( hie.name != "default" ? (" / " + hie.label) : "" ),
+        fullDrilldownValue: dim.name + ( hie.name != "default" ? ("@" + hie.name) : "" ) + ":" + lev.name
+    };
 
 };
 /*
@@ -272,33 +272,33 @@ cubes.Cube.prototype.cvdim_parts = function(dimensionString) {
  */
 cubes.Level.prototype.readCell = function(cell) {
 
-	if (!(this.key().ref in cell)) return null;
+    if (!(this.key().ref in cell)) return null;
 
-	var result = {};
-	result.key = cell[this.key().ref];
-	result.label = cell[this.label_attribute().ref];
-	result.info = {};
-	$(this.attributes).each(function(idx, attribute) {
-		result.info[attribute.ref] = cell[attribute.ref];
-	});
-	return result;
+    var result = {};
+    result.key = cell[this.key().ref];
+    result.label = cell[this.label_attribute().ref];
+    result.info = {};
+    $(this.attributes).each(function(idx, attribute) {
+        result.info[attribute.ref] = cell[attribute.ref];
+    });
+    return result;
 };
 cubes.Hierarchy.prototype.readCell = function(cell, level_limit) {
 
-	var result = [];
-	var hie = this;
+    var result = [];
+    var hie = this;
 
-	for (var i = 0; i < this.levels.length; i ++) {
-		var level = this.levels[i];
-		info = level.readCell(cell);
-		if (info != null) result.push(info);
+    for (var i = 0; i < this.levels.length; i ++) {
+        var level = this.levels[i];
+        info = level.readCell(cell);
+        if (info != null) result.push(info);
 
-		// Stop if we reach level_limit
-		if ((level_limit != undefined) && (level_limit != null)) {
-			if (level_limit.name == level.name) break;
-		}
-	}
-	return result;
+        // Stop if we reach level_limit
+        if ((level_limit != undefined) && (level_limit != null)) {
+            if (level_limit.name == level.name) break;
+        }
+    }
+    return result;
 };
 
 

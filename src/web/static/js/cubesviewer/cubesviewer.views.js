@@ -191,9 +191,12 @@ function cubesviewerViews () {
 	this.getStaticLink = function(view) {
 		var result = jQuery.extend(true, {}, view);
 		result.params.hidetoolbar = true;
-		console.log(cubesviewer);
-		console.log(cubesviewer.gui);
-		return cubesviewer.gui.options.backendUrl + '/show_single?' + JSON.stringify(result.params);
+		var data = JSON.stringify(result.params); 
+		data  = data.replace(/[\u007F-\uFFFF]/g, function(chr) {
+			return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).substr(-4)
+		});
+		data = 'b64' + btoa(data);
+		return cubesviewer.gui.options.backendUrl + '/show_single?' + data;
 	}
 };
 

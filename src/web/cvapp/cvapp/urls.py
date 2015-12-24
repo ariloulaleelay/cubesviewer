@@ -1,4 +1,4 @@
-# CubesViewer  
+# CubesViewer
 #
 # Copyright (c) 2012-2014 Jose Juan Montes, see AUTHORS for more details
 #
@@ -11,11 +11,11 @@
 #
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # If your version of the Software supports interaction with it remotely through
 # a computer network, the above copyright notice and this permission notice
 # shall be accessible to all users.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,17 +40,17 @@ urlpatterns = patterns('',
 
     #url(r'^$', login_required( IndexView.as_view() )),
     url(r'^$', RedirectView.as_view(url='/cubesviewer/')),
-    
+
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'cvapp/login.html'} ),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'} ),
 
-    # Include cubesviewer URLs    
+    # Include cubesviewer URLs
     url(r'^cubesviewer/', include('cubesviewer.urls')),
-    
+
     # Admin site and documentation
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    
-    # Static 
+
+    # Static
     url(r'^static/(.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DIR }),
 )

@@ -30,6 +30,8 @@ from django.conf import settings
 from urllib import unquote
 from json import loads as json_loads
 from json import dumps as json_dumps
+from base64 import b64decode
+
 
 class ShowSingleView(TemplateView):
 
@@ -43,8 +45,9 @@ class ShowSingleView(TemplateView):
         context["view_config"] = ''
         try:
             query = unquote(self.request.META['QUERY_STRING'])
+            if query.startswith('b64'):
+                query = b64decode(query[3:])
             context["view_config"] = json_dumps(json_loads(query))
-        except ValueError, e:
+        except ValueError:
             pass
         return context
-
