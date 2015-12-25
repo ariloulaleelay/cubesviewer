@@ -230,12 +230,9 @@ function cubesviewerViewCube () {
             if (drilldowns.length > 0)
                 args.drilldown = drilldowns;
         }
-
         // Cuts
         args.cut = cubesviewer.views.cube.buildQueryCuts(view);
-
         return args;
-
     }
 
     /*
